@@ -1,165 +1,107 @@
 package com.ramon.playerspotify;
 
-import android.media.MediaPlayer;
-import android.os.Handler;
-import android.os.Message;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.SeekBar;
-import android.widget.TextView;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
-import org.w3c.dom.Text;
+import com.ramon.playerspotify.adapter.ListaAlbunsAdapter;
+import com.ramon.playerspotify.model.AlbumModel;
 
-public class AlbumActivity extends AppCompatActivity implements View.OnClickListener {
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
-    public static final String PARAM_NOME = "PARAM_NOME";
-    private Button fecharButton;
-    private TextView nomeTextView;
+/**
+ * ## Visualização de álbuns de artista
+ *    Mostrar uma listagem de álbuns (nome e imagem no mínimo)
+ */
+public class AlbumActivity extends AppCompatActivity implements ListaAlbunsAdapter.ListaAlbunsDelegate, SearchView.OnQueryTextListener {
 
-    private Button playBtn;
-    private SeekBar posicaoSeekBar;
-    private SeekBar volumeSeekBar;
-    private TextView tempoDecorridoTextView;
-    private TextView tempoTotalTextView;
-    private MediaPlayer mp;
-    private int totalTime;
+    private List<AlbumModel> dataSource;
+    private List<AlbumModel> adapterDataSource;
+    private ListaAlbunsAdapter adapter;
+    private RecyclerView listaAlbunsRecycleView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album);
 
-        nomeTextView = findViewById(R.id.activity_album_nome_text_view);
-        fecharButton = findViewById(R.id.activity_album_fechar_button);
-        fecharButton.setOnClickListener(this);
+        geraDadosTeste();
 
-        String nome = getIntent().getStringExtra(PARAM_NOME);
-        nomeTextView.setText(nome);
+        listaAlbunsRecycleView = findViewById(R.id.lista_album_recycler_view);
 
-        playBtn = (Button) findViewById(R.id.activity_album_play_button);
-        tempoDecorridoTextView = (TextView) findViewById(R.id.activity_album_tempo_decorrido_text_view);
-        tempoTotalTextView = (TextView) findViewById(R.id.activity_album_tempo_total_text_view);
+        adapter = new ListaAlbunsAdapter(adapterDataSource, this);
 
-        // Media Player
-        mp = MediaPlayer.create(this, R.raw.music);
-        mp.setLooping(true);
-        mp.seekTo(0);
-        mp.setVolume(0.5f, 0.5f);
-        totalTime = mp.getDuration();
-
-        // Position Bar
-        posicaoSeekBar = (SeekBar) findViewById(R.id.activity_album_posicao_seek_bar);
-        posicaoSeekBar.setMax(totalTime);
-        posicaoSeekBar.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        if (fromUser) {
-                            mp.seekTo(progress);
-                            posicaoSeekBar.setProgress(progress);
-                        }
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-
-                    }
-                }
-        );
-
-
-        // Volume Bar
-        volumeSeekBar = (SeekBar) findViewById(R.id.activity_album_volume_seek_bar);
-        volumeSeekBar.setOnSeekBarChangeListener(
-                new SeekBar.OnSeekBarChangeListener() {
-                    @Override
-                    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                        float volumeNum = progress / 100f;
-                        mp.setVolume(volumeNum, volumeNum);
-                    }
-
-                    @Override
-                    public void onStartTrackingTouch(SeekBar seekBar) {
-
-                    }
-
-                    @Override
-                    public void onStopTrackingTouch(SeekBar seekBar) {
-
-                    }
-                }
-        );
-
-        // Thread (Update positionBar & timeLabel)
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (mp != null) {
-                    try {
-                        Message msg = new Message();
-                        msg.what = mp.getCurrentPosition();
-                        handler.sendMessage(msg);
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {}
-                }
-            }
-        }).start();
+        listaAlbunsRecycleView.setAdapter(adapter);
+        listaAlbunsRecycleView.setLayoutManager(new LinearLayoutManager(this));
     }
 
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            int currentPosition = msg.what;
-            // Update positionBar.
-            posicaoSeekBar.setProgress(currentPosition);
+    private void geraDadosTeste()
+    {
+        dataSource = new ArrayList<>();
+        dataSource.add(new AlbumModel("Black Label Society", "album_0", new Date(Long.parseLong("1343805819061"))));
+        dataSource.add(new AlbumModel("Rampage - Destruição Total", "album_1", new Date(Long.parseLong("1343805819061"))));
+        dataSource.add(new AlbumModel("Nada a Perder - Contra Tudo. Por Todos", "album_2", new Date(Long.parseLong("1343805819061"))));
+        dataSource.add(new AlbumModel("Um Lugar Silencioso", "album_3",new Date(Long.parseLong("1343805819061"))));
+        dataSource.add(new AlbumModel("Exorcismos e Demônios", "album_4", new Date(Long.parseLong("1343805819061"))));
 
-            // Update Labels.
-            String elapsedTime = createTimeLabel(currentPosition);
-            tempoDecorridoTextView.setText(elapsedTime);
-
-            String remainingTime = createTimeLabel(totalTime-currentPosition);
-            tempoTotalTextView.setText("- " + remainingTime);
-        }
-    };
-
-    public String createTimeLabel(int time) {
-        String timeLabel = "";
-        int min = time / 1000 / 60;
-        int sec = time / 1000 % 60;
-
-        timeLabel = min + ":";
-        if (sec < 10) timeLabel += "0";
-        timeLabel += sec;
-
-        return timeLabel;
-    }
-
-    public void playBtnClick(View view) {
-
-        if (!mp.isPlaying()) {
-            // Stopping
-            mp.start();
-            playBtn.setBackgroundResource(R.drawable.stop);
-
-        } else {
-            // Playing
-            mp.pause();
-            playBtn.setBackgroundResource(R.drawable.play);
-        }
-
+        adapterDataSource = new ArrayList<>();
+        adapterDataSource.addAll(dataSource);
     }
 
     @Override
-    public void onClick(View view) {
-        if (view == fecharButton) {
-            finish();
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_search, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+
+        searchView.setOnQueryTextListener(this);
+
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        // User pressed the search button
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        List<AlbumModel> tempList = new ArrayList<>();
+
+        for (AlbumModel album : dataSource ) {
+            if (album.getNome().toLowerCase().contains(newText.toLowerCase())) {
+                tempList.add(album);
+            }
         }
+
+        adapterDataSource.clear();
+        adapterDataSource.addAll(tempList);
+
+        adapter.notifyDataSetChanged();
+
+
+
+        return true;
+    }
+
+    @Override
+    public void onAlbumSelecionado(AlbumModel album) {
+        Toast.makeText(this, album.getNome(), Toast.LENGTH_LONG).show();
+        /*String nome = album.getNome().toString();
+
+        Intent intent = new Intent(this, AlbumActivity.class);
+        intent.putExtra(AlbumActivity.PARAM_NOME, nome);
+
+        startActivity(intent);*/
     }
 }

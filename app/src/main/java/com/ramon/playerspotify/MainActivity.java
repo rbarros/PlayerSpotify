@@ -1,31 +1,56 @@
 package com.ramon.playerspotify;
 
-import android.app.Activity;
-import android.content.Intent;
+
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
 import com.ramon.playerspotify.adapter.ListaAlbunsAdapter;
+import com.ramon.playerspotify.fragment.AlbunsFragment;
+import com.ramon.playerspotify.fragment.ArtistasFragment;
+import com.ramon.playerspotify.fragment.PlaylistFragment;
 import com.ramon.playerspotify.model.AlbumModel;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements ListaAlbunsAdapter.ListaAlbunsDelegate, SearchView.OnQueryTextListener {
+/**
+ * ## Buscas (https://beta.developer.spotify.com/documentation/web-api/reference/search/search/)
+ *    Busca por álbum
+ *      Buscar e listar álbuns
+ *          Dados mínimos: Nome, foto (somente 1) e ano de publicação do álbum
+ *    Busca por artista
+ *      Buscar e listar artistas
+ *          Dados mínimos: Nome e foto do artista (somente 1)
+ *    Busca por música
+ *      Buscar e listar músicas
+ *          Dados mínimos: Nome e duração da música, foto do album e nome do artista(s)
+ */
+public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
+
+    private Toolbar toolbar;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
 
     private List<AlbumModel> dataSource;
+    private List<AlbumModel> adapterDataSource;
     private ListaAlbunsAdapter adapter;
-    private RecyclerView listaAlbunsRecycleView;
+
+    private Fragment playlistFragment;
+    private Fragment artistasFragment;
+    private Fragment albunsFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,12 +59,21 @@ public class MainActivity extends AppCompatActivity implements ListaAlbunsAdapte
 
         geraDadosTeste();
 
-        listaAlbunsRecycleView = findViewById(R.id.lista_album_recycler_view);
+        playlistFragment = new PlaylistFragment();
+        artistasFragment = new ArtistasFragment();
+        albunsFragment = new AlbunsFragment();
 
-        adapter = new ListaAlbunsAdapter(dataSource, this);
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        // Informa qual toolbar estamos utizando
+        // pois a Activity espera uma Toolbar
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
-        listaAlbunsRecycleView.setAdapter(adapter);
-        listaAlbunsRecycleView.setLayoutManager(new LinearLayoutManager(this));
+        viewPager = findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+
+        tabLayout = findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
     }
 
     private void geraDadosTeste()
@@ -50,6 +84,46 @@ public class MainActivity extends AppCompatActivity implements ListaAlbunsAdapte
         dataSource.add(new AlbumModel("Nada a Perder - Contra Tudo. Por Todos", "album_2", new Date(Long.parseLong("1343805819061"))));
         dataSource.add(new AlbumModel("Um Lugar Silencioso", "album_3",new Date(Long.parseLong("1343805819061"))));
         dataSource.add(new AlbumModel("Exorcismos e Demônios", "album_4", new Date(Long.parseLong("1343805819061"))));
+
+        adapterDataSource = new ArrayList<>();
+        adapterDataSource.addAll(dataSource);
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(playlistFragment, "Playlist");
+        adapter.addFragment(artistasFragment, "Artistas");
+        adapter.addFragment(albunsFragment, "Albuns");
+        viewPager.setAdapter(adapter);
+    }
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
     }
 
     @Override
@@ -72,21 +146,36 @@ public class MainActivity extends AppCompatActivity implements ListaAlbunsAdapte
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        List<AlbumModel> tempList = new ArrayList<>();
-
-        for (AlbumModel album : dataSource ) {
+        //List<AlbumModel> tempList = new ArrayList<>();
+        int index = viewPager.getCurrentItem();
+        ViewPagerAdapter adapter = ((ViewPagerAdapter)viewPager.getAdapter());
+        Fragment activeFragment = adapter.getItem(index);
+        switch (index) {
+            case 0:
+                ((PlaylistFragment)activeFragment).refreshString(newText);
+                break;
+            case 1:
+                ((ArtistasFragment)activeFragment).refreshString(newText);
+                break;
+            case 2:
+                ((AlbunsFragment)activeFragment).refreshString(newText);
+                break;
+        }
+        /*for (AlbumModel album : dataSource ) {
             if (album.getNome().toLowerCase().contains(newText.toLowerCase())) {
                 tempList.add(album);
             }
         }
 
-        adapter = new ListaAlbunsAdapter(tempList, this);
-        listaAlbunsRecycleView.setAdapter(adapter);
+        adapterDataSource.clear();
+        adapterDataSource.addAll(tempList);
+
+        adapter.notifyDataSetChanged();*/
 
         return true;
     }
 
-    @Override
+    /*@Override
     public void onAlbumSelecionado(AlbumModel album) {
         Toast.makeText(this, album.getNome(), Toast.LENGTH_LONG).show();
         String nome = album.getNome().toString();
@@ -95,5 +184,5 @@ public class MainActivity extends AppCompatActivity implements ListaAlbunsAdapte
         intent.putExtra(AlbumActivity.PARAM_NOME, nome);
 
         startActivity(intent);
-    }
+    }*/
 }

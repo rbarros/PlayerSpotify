@@ -3,4 +3,7 @@
     <string name="app_label">Buscar...</string>
     <string name="search_hint">Buscar.</string>
     <string name="activity_album_botao_fechar">Fechar</string>
+    <string name="playlist_fragment">Playlist</string>
+    <string name="artistas_fragment">Artistas</string>
+    <string name="albuns_fragment">Albuns</string>
 </resources>
