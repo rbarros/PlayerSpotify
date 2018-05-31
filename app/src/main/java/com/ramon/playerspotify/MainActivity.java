@@ -150,7 +150,6 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
     @Override
     public boolean onQueryTextChange(String newText) {
-        //List<AlbumModel> tempList = new ArrayList<>();
         int index = viewPager.getCurrentItem();
         ViewPagerAdapter adapter = ((ViewPagerAdapter)viewPager.getAdapter());
         Fragment activeFragment = adapter.getItem(index);
@@ -159,34 +158,16 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
                 ((PlaylistFragment)activeFragment).refreshString(newText);
                 break;
             case 1:
-                ((ArtistasFragment)activeFragment).refreshString(newText);
+                ((MusicasFragment)musicasFragment).refreshString(newText);
                 break;
             case 2:
+                ((ArtistasFragment)activeFragment).refreshString(newText);
+                break;
+            case 3:
                 ((AlbunsFragment)activeFragment).refreshString(newText);
                 break;
         }
-        /*for (AlbumModel album : dataSource ) {
-            if (album.getNome().toLowerCase().contains(newText.toLowerCase())) {
-                tempList.add(album);
-            }
-        }
-
-        adapterDataSource.clear();
-        adapterDataSource.addAll(tempList);
-
-        adapter.notifyDataSetChanged();*/
 
         return true;
     }
-
-    /*@Override
-    public void onAlbumSelecionado(AlbumModel album) {
-        Toast.makeText(this, album.getNome(), Toast.LENGTH_LONG).show();
-        String nome = album.getNome().toString();
-
-        Intent intent = new Intent(this, AlbumActivity.class);
-        intent.putExtra(AlbumActivity.PARAM_NOME, nome);
-
-        startActivity(intent);
-    }*/
 }

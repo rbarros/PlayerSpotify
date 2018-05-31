@@ -11,26 +11,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ramon.playerspotify.PlayerActivity;
 import com.ramon.playerspotify.R;
 import com.ramon.playerspotify.adapter.ListaPlaylistAdapter;
 import com.ramon.playerspotify.model.MusicaModel;
+import com.ramon.playerspotify.model.PlaylistModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.zip.Inflater;
-
 
 /**
  * A simple {@link Fragment} subclass.
  */
 public class PlaylistFragment extends Fragment implements ListaPlaylistAdapter.ListaPlaylistDelegate {
 
-    private List<MusicaModel> dataSource;
-    private List<MusicaModel> adapterDataSource;
+    private List<PlaylistModel> dataSource;
+    private List<PlaylistModel> adapterDataSource;
     private ListaPlaylistAdapter adapter;
     private RecyclerView listaPlaylistRecycleView;
     public TextView mTextView;
@@ -48,7 +46,9 @@ public class PlaylistFragment extends Fragment implements ListaPlaylistAdapter.L
     private void geraDadosTeste()
     {
         dataSource = new ArrayList<>();
-        dataSource.add(
+
+        List<MusicaModel> musicas = new ArrayList<MusicaModel>();
+        musicas.add(
                 new MusicaModel(
                         "5BODRfhgnHa4I5rDrkxs3x",
                         "Closure",
@@ -58,7 +58,7 @@ public class PlaylistFragment extends Fragment implements ListaPlaylistAdapter.L
                         "musica_0.mp3"
                 )
         );
-        dataSource.add(
+        musicas.add(
                 new MusicaModel(
                         "0vDBNWI0uXf7dNkiiX2P5z",
                         "Let Me Live My Life",
@@ -68,7 +68,7 @@ public class PlaylistFragment extends Fragment implements ListaPlaylistAdapter.L
                         "musica_1.mp3"
                 )
         );
-        dataSource.add(
+        musicas.add(
                 new MusicaModel(
                         "0qp72lMqrpmpJkp4RYonO7",
                         "Rebirthing",
@@ -78,7 +78,7 @@ public class PlaylistFragment extends Fragment implements ListaPlaylistAdapter.L
                         "musica_2.mp3"
                 )
         );
-        dataSource.add(
+        musicas.add(
                 new MusicaModel(
                         "43IivQEjE7rgnUk4YL3LpI",
                         "Hollow",
@@ -88,7 +88,7 @@ public class PlaylistFragment extends Fragment implements ListaPlaylistAdapter.L
                         "musica_3.mp3"
                 )
         );
-        dataSource.add(
+        musicas.add(
                 new MusicaModel(
                         "2wcOAWdnv22pYwRHscYfz2",
                         "Innocence",
@@ -96,6 +96,14 @@ public class PlaylistFragment extends Fragment implements ListaPlaylistAdapter.L
                         "musica_4.jpeg",
                         Arrays.asList("Halestorm"),
                         "musica_4.mp3"
+                )
+        );
+        dataSource.add(
+                new PlaylistModel(
+                        "1",
+                        "Playlist 1",
+                        "playlist_0",
+                        musicas
                 )
         );
 
@@ -128,13 +136,13 @@ public class PlaylistFragment extends Fragment implements ListaPlaylistAdapter.L
     }
 
     public void refreshString(String string) {
-        List<MusicaModel> tempList = new ArrayList<>();
+        List<PlaylistModel> tempList = new ArrayList<>();
         //mTextView = getActivity().findViewById(R.id.text_view_fragment_playlist);
         //mTextView.setText(string);
 
-        for (MusicaModel musica : dataSource ) {
-            if (musica.toString().toLowerCase().contains(string)) {
-                tempList.add(musica);
+        for (PlaylistModel playlist : dataSource ) {
+            if (playlist.getNome().toLowerCase().contains(string)) {
+                tempList.add(playlist);
             }
         }
 
@@ -145,9 +153,9 @@ public class PlaylistFragment extends Fragment implements ListaPlaylistAdapter.L
     }
 
     @Override
-    public void onPlaylistSelecionado(MusicaModel musica) {
+    public void onPlaylistSelecionado(PlaylistModel playlist) {
         //Toast.makeText(this, musica.getNome(), Toast.LENGTH_LONG).show();
-        String nome = musica.getNome().toString();
+        String nome = playlist.getNome().toString();
 
         Intent intent = new Intent(getContext(), PlayerActivity.class);
         intent.putExtra(PlayerActivity.PARAM_NOME, nome);

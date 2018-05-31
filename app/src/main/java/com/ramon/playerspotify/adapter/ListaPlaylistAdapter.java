@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.ramon.playerspotify.R;
 import com.ramon.playerspotify.model.MusicaModel;
+import com.ramon.playerspotify.model.PlaylistModel;
 
 import java.util.List;
 
@@ -20,10 +21,10 @@ import java.util.List;
 
 public class ListaPlaylistAdapter extends RecyclerView.Adapter<ListaPlaylistAdapter.PlaylistViewHolder> {
 
-    private List<MusicaModel> dataSource;
+    private List<PlaylistModel> dataSource;
     private ListaPlaylistAdapter.ListaPlaylistDelegate delegate;
 
-    public ListaPlaylistAdapter(List<MusicaModel> dataSource, ListaPlaylistAdapter.ListaPlaylistDelegate delegate) {
+    public ListaPlaylistAdapter(List<PlaylistModel> dataSource, ListaPlaylistAdapter.ListaPlaylistDelegate delegate) {
         this.dataSource = dataSource;
         this.delegate = delegate;
     }
@@ -37,15 +38,12 @@ public class ListaPlaylistAdapter extends RecyclerView.Adapter<ListaPlaylistAdap
 
     @Override
     public void onBindViewHolder(ListaPlaylistAdapter.PlaylistViewHolder holder, int position) {
-        MusicaModel musica = dataSource.get(position);
-        holder.nomeAlbumTextView.setText(musica.getNome());
-        float duracao = musica.getDuracao();
-        //holder.dataAlbumTextView.setText(((String) duracao));
+        PlaylistModel playlist = dataSource.get(position);
+        holder.nomeAlbumTextView.setText(playlist.getNome());
 
         Context context = holder.nomeAlbumTextView.getContext();
 
         String resourceName = "musica_" + position;
-        //String resourceName = musica.getImagem();
         int resourceId = context.getResources().getIdentifier(resourceName, "drawable", context.getPackageName());
         Drawable imagem = context.getResources().getDrawable(resourceId, null);
 
@@ -77,17 +75,17 @@ public class ListaPlaylistAdapter extends RecyclerView.Adapter<ListaPlaylistAdap
         public void onClick(View view) {
             // Aqui recupera o item que foi clicado
             // getAdpaterPosition() Retornar a linha referente ao ViewHolder
-            MusicaModel musica = adapter.dataSource.get(getAdapterPosition());
+            PlaylistModel playlist = adapter.dataSource.get(getAdapterPosition());
 
             if (adapter.delegate != null) {
-                adapter.delegate.onPlaylistSelecionado(musica);
+                adapter.delegate.onPlaylistSelecionado(playlist);
             }
         }
     }
 
     public static interface ListaPlaylistDelegate {
 
-        public void onPlaylistSelecionado(MusicaModel musica);
+        public void onPlaylistSelecionado(PlaylistModel playlist);
 
     }
 }
