@@ -15,34 +15,34 @@ import com.ramon.playerspotify.model.MusicaModel;
 import java.util.List;
 
 /**
- * Created by desenv-03 on 27/05/18.
+ * Created by desenv-03 on 30/05/18.
  */
 
-public class ListaPlaylistAdapter extends RecyclerView.Adapter<ListaPlaylistAdapter.PlaylistViewHolder> {
+public class ListaMusicasAdapter extends RecyclerView.Adapter<ListaMusicasAdapter.MusicasViewHolder> {
 
     private List<MusicaModel> dataSource;
-    private ListaPlaylistAdapter.ListaPlaylistDelegate delegate;
+    private ListaMusicasAdapter.ListaMusicaDelegate delegate;
 
-    public ListaPlaylistAdapter(List<MusicaModel> dataSource, ListaPlaylistAdapter.ListaPlaylistDelegate delegate) {
+    public ListaMusicasAdapter(List<MusicaModel> dataSource, ListaMusicasAdapter.ListaMusicaDelegate delegate) {
         this.dataSource = dataSource;
         this.delegate = delegate;
     }
 
     @Override
-    public ListaPlaylistAdapter.PlaylistViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ListaMusicasAdapter.MusicasViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        View view = inflater.inflate(R.layout.linha_lista_playlist, parent, false);
-        return new ListaPlaylistAdapter.PlaylistViewHolder(view, this);
+        View view = inflater.inflate(R.layout.linha_lista_musica, parent, false);
+        return new ListaMusicasAdapter.MusicasViewHolder(view, this);
     }
 
     @Override
-    public void onBindViewHolder(ListaPlaylistAdapter.PlaylistViewHolder holder, int position) {
+    public void onBindViewHolder(ListaMusicasAdapter.MusicasViewHolder holder, int position) {
         MusicaModel musica = dataSource.get(position);
-        holder.nomeAlbumTextView.setText(musica.getNome());
-        float duracao = musica.getDuracao();
-        //holder.dataAlbumTextView.setText(((String) duracao));
+        holder.nomeMusicaTextView.setText(musica.getNome());
+        List<String> artistas = musica.getArtista();
+        holder.nomeArtistaTextView.setText(artistas.toString());
 
-        Context context = holder.nomeAlbumTextView.getContext();
+        Context context = holder.nomeMusicaTextView.getContext();
 
         String resourceName = "musica_" + position;
         //String resourceName = musica.getImagem();
@@ -57,19 +57,19 @@ public class ListaPlaylistAdapter extends RecyclerView.Adapter<ListaPlaylistAdap
         return dataSource.size();
     }
 
-    public static class PlaylistViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener  {
+    public static class MusicasViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ImageView capaAlbumImageView;
-        private TextView nomeAlbumTextView;
-        private TextView dataAlbumTextView;
-        private ListaPlaylistAdapter adapter;
+        private TextView nomeMusicaTextView;
+        private TextView nomeArtistaTextView;
+        private ListaMusicasAdapter adapter;
 
-        public PlaylistViewHolder(View itemView, ListaPlaylistAdapter adapter) {
+        public MusicasViewHolder(View itemView, ListaMusicasAdapter adapter) {
             super(itemView);
             this.adapter = adapter;
             capaAlbumImageView = itemView.findViewById(R.id.capa_album_image_view);
-            nomeAlbumTextView = itemView.findViewById(R.id.nome_album_text_view);
-            dataAlbumTextView = itemView.findViewById(R.id.data_album_text_view);
+            nomeMusicaTextView = itemView.findViewById(R.id.nome_musica_text_view);
+            nomeArtistaTextView = itemView.findViewById(R.id.nome_artista_text_view);
             itemView.setOnClickListener(this);
         }
 
@@ -80,14 +80,14 @@ public class ListaPlaylistAdapter extends RecyclerView.Adapter<ListaPlaylistAdap
             MusicaModel musica = adapter.dataSource.get(getAdapterPosition());
 
             if (adapter.delegate != null) {
-                adapter.delegate.onPlaylistSelecionado(musica);
+                adapter.delegate.onMusicaSelecionada(musica);
             }
         }
     }
 
-    public static interface ListaPlaylistDelegate {
+    public static interface ListaMusicaDelegate {
 
-        public void onPlaylistSelecionado(MusicaModel musica);
+        public void onMusicaSelecionada(MusicaModel musica);
 
     }
 }

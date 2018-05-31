@@ -10,32 +10,28 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.ramon.playerspotify.PlayerActivity;
 import com.ramon.playerspotify.R;
+import com.ramon.playerspotify.adapter.ListaMusicasAdapter;
 import com.ramon.playerspotify.adapter.ListaPlaylistAdapter;
 import com.ramon.playerspotify.model.MusicaModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.zip.Inflater;
-
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class PlaylistFragment extends Fragment implements ListaPlaylistAdapter.ListaPlaylistDelegate {
+public class MusicasFragment extends Fragment implements ListaMusicasAdapter.ListaMusicaDelegate {
 
     private List<MusicaModel> dataSource;
     private List<MusicaModel> adapterDataSource;
-    private ListaPlaylistAdapter adapter;
-    private RecyclerView listaPlaylistRecycleView;
-    public TextView mTextView;
+    private ListaMusicasAdapter adapter;
+    private RecyclerView listaMusicaRecycleView;
 
-    public PlaylistFragment() {
+    public MusicasFragment() {
         // Required empty public constructor
     }
 
@@ -106,14 +102,13 @@ public class PlaylistFragment extends Fragment implements ListaPlaylistAdapter.L
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_playlist, container, false);
-        listaPlaylistRecycleView = view.findViewById(R.id.lista_playlist_recycler_view);
+        View view = inflater.inflate(R.layout.fragment_musicas, container, false);
+        listaMusicaRecycleView = view.findViewById(R.id.lista_musicas_recycler_view);
 
-        adapter = new ListaPlaylistAdapter(adapterDataSource, this);
+        adapter = new ListaMusicasAdapter(adapterDataSource, this);
 
-        listaPlaylistRecycleView.setAdapter(adapter);
-        listaPlaylistRecycleView.setLayoutManager(new LinearLayoutManager(getContext()));
+        listaMusicaRecycleView.setAdapter(adapter);
+        listaMusicaRecycleView.setLayoutManager(new LinearLayoutManager(getContext()));
         return view;
     }
 
@@ -129,11 +124,9 @@ public class PlaylistFragment extends Fragment implements ListaPlaylistAdapter.L
 
     public void refreshString(String string) {
         List<MusicaModel> tempList = new ArrayList<>();
-        //mTextView = getActivity().findViewById(R.id.text_view_fragment_playlist);
-        //mTextView.setText(string);
 
         for (MusicaModel musica : dataSource ) {
-            if (musica.toString().toLowerCase().contains(string)) {
+            if (musica.toString().toLowerCase().contains(string.toLowerCase())) {
                 tempList.add(musica);
             }
         }
@@ -145,8 +138,7 @@ public class PlaylistFragment extends Fragment implements ListaPlaylistAdapter.L
     }
 
     @Override
-    public void onPlaylistSelecionado(MusicaModel musica) {
-        //Toast.makeText(this, musica.getNome(), Toast.LENGTH_LONG).show();
+    public void onMusicaSelecionada(MusicaModel musica) {
         String nome = musica.getNome().toString();
 
         Intent intent = new Intent(getContext(), PlayerActivity.class);

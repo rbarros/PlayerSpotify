@@ -11,7 +11,7 @@
         android:src="@drawable/album_0"/>
 
     <TextView
-        android:id="@+id/nome_album_text_view"
+        android:id="@+id/nome_musica_text_view"
         android:text="nome da música"
         android:textSize="18sp"
         android:layout_width="match_parent"
@@ -25,8 +25,8 @@
         android:textSize="14sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/nome_album_text_view"
-        android:layout_alignLeft="@id/nome_album_text_view"/>
+        android:layout_below="@id/nome_musica_text_view"
+        android:layout_alignLeft="@id/nome_musica_text_view"/>
 
 
 </RelativeLayout>

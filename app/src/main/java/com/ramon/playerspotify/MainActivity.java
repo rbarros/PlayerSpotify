@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.ramon.playerspotify.adapter.ListaAlbunsAdapter;
 import com.ramon.playerspotify.fragment.AlbunsFragment;
 import com.ramon.playerspotify.fragment.ArtistasFragment;
+import com.ramon.playerspotify.fragment.MusicasFragment;
 import com.ramon.playerspotify.fragment.PlaylistFragment;
 import com.ramon.playerspotify.model.AlbumModel;
 
@@ -44,11 +45,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
-    private List<AlbumModel> dataSource;
-    private List<AlbumModel> adapterDataSource;
+//    private List<AlbumModel> dataSource;
+//    private List<AlbumModel> adapterDataSource;
     private ListaAlbunsAdapter adapter;
 
     private Fragment playlistFragment;
+    private Fragment musicasFragment;
     private Fragment artistasFragment;
     private Fragment albunsFragment;
 
@@ -57,9 +59,10 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        geraDadosTeste();
+        //geraDadosTeste();
 
         playlistFragment = new PlaylistFragment();
+        musicasFragment = new MusicasFragment();
         artistasFragment = new ArtistasFragment();
         albunsFragment = new AlbunsFragment();
 
@@ -76,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         tabLayout.setupWithViewPager(viewPager);
     }
 
-    private void geraDadosTeste()
+    /*private void geraDadosTeste()
     {
         dataSource = new ArrayList<>();
         dataSource.add(new AlbumModel("Black Label Society", "album_0", new Date(Long.parseLong("1343805819061"))));
@@ -87,11 +90,12 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
 
         adapterDataSource = new ArrayList<>();
         adapterDataSource.addAll(dataSource);
-    }
+    }*/
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         adapter.addFragment(playlistFragment, "Playlist");
+        adapter.addFragment(musicasFragment, "Músicas");
         adapter.addFragment(artistasFragment, "Artistas");
         adapter.addFragment(albunsFragment, "Albuns");
         viewPager.setAdapter(adapter);
