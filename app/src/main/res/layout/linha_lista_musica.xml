@@ -6,8 +6,8 @@
 
     <ImageView
         android:id="@+id/capa_album_image_view"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:src="@drawable/album_0"/>
 
     <TextView
@@ -28,5 +28,22 @@
         android:layout_below="@id/nome_musica_text_view"
         android:layout_alignLeft="@id/nome_musica_text_view"/>
 
+    <!--Button
+        android:id="@+id/play_musica_button"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_below="@+id/nome_musica_text_view"
+        android:layout_toStartOf="@+id/adicionar_musica_button"
+        android:background="@android:drawable/ic_media_play"
+        android:onClick="playBtnClick" /-->
+
+    <Button
+        android:id="@+id/adicionar_musica_button"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/nome_musica_text_view"
+        android:background="@android:drawable/ic_input_add"
+        android:onClick="addMusicBtnClick" />
 
 </RelativeLayout>

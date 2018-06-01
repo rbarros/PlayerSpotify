@@ -6,12 +6,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ramon.playerspotify.R;
 import com.ramon.playerspotify.model.MusicaModel;
-
 import java.util.List;
 
 /**
@@ -62,6 +62,8 @@ public class ListaMusicasAdapter extends RecyclerView.Adapter<ListaMusicasAdapte
         private ImageView capaAlbumImageView;
         private TextView nomeMusicaTextView;
         private TextView nomeArtistaTextView;
+        private Button playMusicaButton;
+        private Button adicionarMusicaButton;
         private ListaMusicasAdapter adapter;
 
         public MusicasViewHolder(View itemView, ListaMusicasAdapter adapter) {
@@ -70,6 +72,10 @@ public class ListaMusicasAdapter extends RecyclerView.Adapter<ListaMusicasAdapte
             capaAlbumImageView = itemView.findViewById(R.id.capa_album_image_view);
             nomeMusicaTextView = itemView.findViewById(R.id.nome_musica_text_view);
             nomeArtistaTextView = itemView.findViewById(R.id.nome_artista_text_view);
+            //playMusicaButton = itemView.findViewById(R.id.play_musica_button);
+            //playMusicaButton.setOnClickListener(this);
+            adicionarMusicaButton = itemView.findViewById(R.id.adicionar_musica_button);
+            adicionarMusicaButton.setOnClickListener(this);
             itemView.setOnClickListener(this);
         }
 
@@ -80,14 +86,21 @@ public class ListaMusicasAdapter extends RecyclerView.Adapter<ListaMusicasAdapte
             MusicaModel musica = adapter.dataSource.get(getAdapterPosition());
 
             if (adapter.delegate != null) {
-                adapter.delegate.onMusicaSelecionada(musica);
+                if (view == adicionarMusicaButton) {
+                    adapter.delegate.onMusicaPlaylist(view, musica);
+                } else if (view == playMusicaButton) {
+                    adapter.delegate.onMusicaPlay(view, musica);
+                } else {
+                    adapter.delegate.onMusicaSelecionada(view, musica);
+                }
             }
         }
     }
 
     public static interface ListaMusicaDelegate {
 
-        public void onMusicaSelecionada(MusicaModel musica);
-
+        public void onMusicaPlaylist(View view, MusicaModel musica);
+        public void onMusicaSelecionada(View view, MusicaModel musica);
+        public void onMusicaPlay(View view, MusicaModel musica);
     }
 }

@@ -3,18 +3,29 @@ package com.ramon.playerspotify;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.ramon.playerspotify.model.MusicaModel;
+
 public class PlayerActivity extends AppCompatActivity implements View.OnClickListener {
 
     public static final String PARAM_NOME = "PARAM_NOME";
+    public static final MusicaModel MUSICA = null;
+    private Toolbar toolbar;
     private Button fecharButton;
     private TextView nomeTextView;
+
+    private static final int STATE_PAUSED = 0;
+    private static final int STATE_PLAYING = 1;
+
+    private int mCurrentState;
 
     private Button playBtn;
     private SeekBar posicaoSeekBar;
@@ -22,6 +33,7 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
     private TextView tempoDecorridoTextView;
     private TextView tempoTotalTextView;
     private MediaPlayer mp;
+    private MediaSessionCompat mMediaSessionCompat;
     private int totalTime;
 
     @Override
@@ -29,9 +41,15 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
+        Toolbar toolbar = findViewById(R.id.main_toolbar);
+        // Informa qual toolbar estamos utizando
+        // pois a Activity espera uma Toolbar
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+
         nomeTextView = findViewById(R.id.activity_player_nome_text_view);
-        fecharButton = findViewById(R.id.activity_player_fechar_button);
-        fecharButton.setOnClickListener(this);
+//        fecharButton = findViewById(R.id.activity_player_fechar_button);
+//        fecharButton.setOnClickListener(this);
 
         String nome = getIntent().getStringExtra(PARAM_NOME);
         nomeTextView.setText(nome);
@@ -111,6 +129,11 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
         }).start();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -156,8 +179,8 @@ public class PlayerActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View view) {
-        if (view == fecharButton) {
-            finish();
-        }
+//        if (view == fecharButton) {
+//            finish();
+//        }
     }
 }

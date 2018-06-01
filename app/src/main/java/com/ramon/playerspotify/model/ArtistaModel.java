@@ -6,12 +6,22 @@ package com.ramon.playerspotify.model;
 
 public class ArtistaModel {
 
+    private String id;
     private String nome;
     private String foto;
 
-    public ArtistaModel(String nome, String foto) {
+    public ArtistaModel(String id, String nome, String foto) {
+        this.id = id;
         this.nome = nome;
         this.foto = foto;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getNome() {
